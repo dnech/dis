@@ -29,7 +29,7 @@ Ext.application({
             extdir:		'ext-5.1/',
 			locale:		'ru',
 			theme:		'classic',
-			timezone:	'+7',
+			timezone:	'+07:00',
 			api: {
 				login: 	'/api/auth/login',
 				logout: '/api/auth/logout'
