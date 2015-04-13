@@ -2,5 +2,5 @@
 
 ## Install
 
-Run PostgreSQL server
-Run start.bat
+  - Run PostgreSQL server
+  - Run start.bat
