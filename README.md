@@ -2,5 +2,5 @@
 
 ## Install
 
-Run nodejs app.js 
-or iojs app.js
+Run PostgreSQL server
+Run start.bat
