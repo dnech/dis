@@ -1,7 +1,14 @@
 ---------------------------------------------
+       FOR NEW DIR
 1. cd GitHub/
 2. git clone https://github.com/dnech/DIS.git
 3. cd DIS/
+-----------------------------
+       FOR OLD DIR
+1. cd GitHub/DIS/
+2. git fetch origin develop
+3. git merge origin
+-----------------------------
 4. Show branch
 	- local: git branch
 	- remote: git branch -a
@@ -19,4 +26,3 @@
 8. delete [dn4v] after merge
 	- git branch -d dn4v
 ---------------------------------------------
-OR
