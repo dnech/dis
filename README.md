@@ -1,1 +1,5 @@
-# dis
+# DIS
+
+## Install
+
+Run nodejs app.js 
