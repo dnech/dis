@@ -1,0 +1,233 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.3.5
+-- Dumped by pg_dump version 9.3.1
+-- Started on 2014-12-10 16:35:17
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- TOC entry 174 (class 3079 OID 11750)
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 1955 (class 0 OID 0)
+-- Dependencies: 174
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 172 (class 1259 OID 32768)
+-- Name: _tables; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE _tables (
+    id integer NOT NULL,
+    name character varying(255),
+    alias character varying(255),
+    settings text
+);
+
+
+ALTER TABLE public._tables OWNER TO postgres;
+
+--
+-- TOC entry 173 (class 1259 OID 32771)
+-- Name: _tables_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE _tables_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public._tables_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 1956 (class 0 OID 0)
+-- Dependencies: 173
+-- Name: _tables_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE _tables_id_seq OWNED BY _tables.id;
+
+
+--
+-- TOC entry 171 (class 1259 OID 24586)
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE users (
+    id integer NOT NULL,
+    name character varying(255),
+    title character varying(255)
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- TOC entry 170 (class 1259 OID 24584)
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.users_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 1957 (class 0 OID 0)
+-- Dependencies: 170
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE users_id_seq OWNED BY users.id;
+
+
+--
+-- TOC entry 1832 (class 2604 OID 32773)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY _tables ALTER COLUMN id SET DEFAULT nextval('_tables_id_seq'::regclass);
+
+
+--
+-- TOC entry 1831 (class 2604 OID 24589)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
+
+
+--
+-- TOC entry 1946 (class 0 OID 32768)
+-- Dependencies: 172
+-- Data for Name: _tables; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY _tables (id, name, alias, settings) FROM stdin;
+1	Пользователи	users	{"name": "users",\n"columns": {\n\t"name": "STRING",\n\t"title": "STRING"\n}}
+2	Таблицы	tables	{"name": "_tables",\n"columns": {\n\t"name": "STRING",\n\t"alias": "STRING",\r\n\t"settings": "TEXT"  \n}}
+\.
+
+
+--
+-- TOC entry 1958 (class 0 OID 0)
+-- Dependencies: 173
+-- Name: _tables_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('_tables_id_seq', 2, true);
+
+
+--
+-- TOC entry 1945 (class 0 OID 24586)
+-- Dependencies: 171
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY users (id, name, title) FROM stdin;
+2	n2	t2
+6	n6	t6
+8	n8	t8
+9	n9	t9
+10	n10	t10
+11	n11	t11
+12	n12	t12
+14	n14	t14
+15	n15	t15
+16	n16	t16
+17	n17	t17
+18	n18	t18
+19	n19	t19
+20	n20	t20
+21	n21	t21
+22	n22	t22
+23	n23	t23
+24	n24	t24
+25	n25	t25
+26	n26	t26
+27	n27	t27
+28	n28	t28
+29	n29	t29
+30	rrrrrrrrrrr	rrrrrrrrrrrr
+3	n3	t355
+1	n1	t1111666
+\.
+
+
+--
+-- TOC entry 1959 (class 0 OID 0)
+-- Dependencies: 170
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('users_id_seq', 30, true);
+
+
+--
+-- TOC entry 1836 (class 2606 OID 32781)
+-- Name: _tables_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY _tables
+    ADD CONSTRAINT _tables_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1834 (class 2606 OID 24594)
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1954 (class 0 OID 0)
+-- Dependencies: 5
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2014-12-10 16:35:17
+
+--
+-- PostgreSQL database dump complete
+--
+
