@@ -1,0 +1,16 @@
+1. cd FOLDER/
+2. git clone https://github.com/dnech/DIS.git
+3. Show branch
+	- local: git branch
+	- remote: git branch -a
+4. if [master]
+	git checkout -b develop origin/develop
+5. for [develop]
+	- git branch dn4v
+	- git add .
+	- git commit -a -m "text"
+	- git push origin dn4v
+6. merge dn4v to develop
+	- git checkout develop
+	- git merge dn4v
+	- git push origin develop
