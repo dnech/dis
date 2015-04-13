@@ -1,3 +1,4 @@
+---------------------------------------------
 1. cd GitHub/
 2. git clone https://github.com/dnech/DIS.git
 3. cd DIS/
