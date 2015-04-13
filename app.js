@@ -46,7 +46,7 @@ app.use(app.router);
 app.use(express.static(global.PUBLIC));
 
 
-
+//getytyty
   
 //router
 router.init(app);
