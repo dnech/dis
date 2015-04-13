@@ -7,10 +7,6 @@ Desktop.ini
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
-backup/
-
-iojs.exe
-start.bat
 
 # Windows Installer files
 *.cab
