@@ -13,5 +13,5 @@ SET bk1=arhiv\db_last.sql
 SET bk2=arhiv\db_%dt%.sql
 
 REM ECHO off
-..\..\PostgreSQL\bin\pg_dump -c -C --column-inserts --serializable-deferrable -U postgres -h localhost -p 5432 %db%  > %bk1%
-..\..\PostgreSQL\bin\pg_dump -c -C --column-inserts --serializable-deferrable -U postgres -h localhost -p 5432 %db%  > %bk2%
+..\..\..\PostgreSQL\bin\pg_dump -c -C --column-inserts --serializable-deferrable -U postgres -h localhost -p 5432 %db%  > %bk1%
+..\..\..\PostgreSQL\bin\pg_dump -c -C --column-inserts --serializable-deferrable -U postgres -h localhost -p 5432 %db%  > %bk2%
