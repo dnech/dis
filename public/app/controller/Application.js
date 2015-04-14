@@ -1,5 +1,6 @@
 Ext.define('App.controller.Application', {
 	extend: 'Ext.app.Controller',
+	stores: ['Constants', 'Modules', 'Tables', 'Windows', 'Settings'],
 	init: function() {
 		var me = this;
 		
@@ -17,7 +18,16 @@ Ext.define('App.controller.Application', {
 			App.CONST.api.res		= '/api/'+user.ssid+'/res/';
             try {App.CONST.Me.config = Ext.JSON.decode(App.CONST.Me.config);} catch(err) {}
             try {App.CONST.Me.extend = Ext.JSON.decode(App.CONST.Me.extend);} catch(err) {}
+			
+			App.model.Constants.getProxy().url	= App.CONST.api.meta + 'constants';
+			App.model.Modules.getProxy().url	= App.CONST.api.meta + 'modules';
+			App.model.Tables.getProxy().url		= App.CONST.api.meta + 'tables';
+			App.model.Windows.getProxy().url	= App.CONST.api.meta + 'windows';
+			App.model.Settings.getProxy().url	= App.CONST.api.meta + 'settings';
+			
 		};
+		
+		
 		
 		App.LogOut = function(){
 			Ext.util.Cookies.clear('DIS_SESSION_KEY');
@@ -118,63 +128,68 @@ Ext.define('App.controller.Application', {
             /* G L O B A L   S T O R E S */
             /*****************************/
             App.Meta = {
-                Constants: Ext.create('Ext.data.Store', {
-                    fields:  [
-                        {name: 'guid',   type: 'string'	},
-                        {name: 'name',   type: 'string'	},
-                        {name: 'data',   type: 'string'	}
-                    ],
-                    proxy: App.ProxyMeta('constants'),
-                    autoLoad: false,
-                    autoSync: false,
-                    autoDestroy: false
-                }),
-                Modules: Ext.create('Ext.data.Store', {
-                    fields:  [
-                        {name: 'guid',   type: 'string'	},
-                        {name: 'name',   type: 'string'	},
-                        {name: 'data',   type: 'string'	}
-                    ],
-                    proxy: App.ProxyMeta('modules'),
-                    autoLoad: false,
-                    autoSync: false,
-                    autoDestroy: false
-                }),
-                Tables: Ext.create('Ext.data.Store', {
-                    fields:  [
-                        {name: 'guid',   type: 'string'	},
-                        {name: 'name',   type: 'string'	},
-                        {name: 'title',  type: 'string'	},
-                        {name: 'data',   type: 'string'	}
-                    ],
-                    proxy: App.ProxyMeta('tables'),
-                    autoLoad: false,
-                    autoSync: false,
-                    autoDestroy: false
-                }),
-                Windows: Ext.create('Ext.data.Store', {
-                    fields:  [
-                        {name: 'guid',   type: 'string'	},
-                        {name: 'name',   type: 'string'	},
-                        {name: 'title',  type: 'string'	},
-                        {name: 'data',   type: 'string'	}
-                    ],
-                    proxy: App.ProxyMeta('windows'),
-                    autoLoad: false,
-                    autoSync: false,
-                    autoDestroy: false
-                }),
-                Settings: Ext.create('Ext.data.Store', {
-                    fields:  [
-                        {name: 'guid',   type: 'string'	},
-                        {name: 'name',   type: 'string'	},
-                        {name: 'data',   type: 'string'	}
-                    ],
-                    proxy: App.ProxySettings(),
-                    autoLoad: false,
-                    autoSync: false,
-                    autoDestroy: false
-                }),
+                Constants: Ext.create('App.store.Constants'),
+				//Ext.create('Ext.data.Store', {
+                //    fields:  [
+                //        {name: 'guid',   type: 'string'	},
+                //        {name: 'name',   type: 'string'	},
+                //        {name: 'data',   type: 'string'	}
+                //    ],
+                //    proxy: App.ProxyMeta('constants'),
+                //    autoLoad: false,
+                //    autoSync: false,
+                //    autoDestroy: false
+                //}),
+                Modules: Ext.create('App.store.Modules'),
+				//Ext.create('Ext.data.Store', {
+                //    fields:  [
+                //        {name: 'guid',   type: 'string'	},
+                //        {name: 'name',   type: 'string'	},
+                //        {name: 'data',   type: 'string'	}
+                //    ],
+                //    proxy: App.ProxyMeta('modules'),
+                //    autoLoad: false,
+                //    autoSync: false,
+                //    autoDestroy: false
+                //}),
+                Tables: Ext.create('App.store.Tables'),
+				//Ext.create('Ext.data.Store', {
+                //    fields:  [
+                //        {name: 'guid',   type: 'string'	},
+                //        {name: 'name',   type: 'string'	},
+                //        {name: 'title',  type: 'string'	},
+                //        {name: 'data',   type: 'string'	}
+                //    ],
+                //    proxy: App.ProxyMeta('tables'),
+                //    autoLoad: false,
+                //    autoSync: false,
+                //    autoDestroy: false
+                //}),
+                Windows: Ext.create('App.store.Windows'),
+				//Ext.create('Ext.data.Store', {
+                //    fields:  [
+                //        {name: 'guid',   type: 'string'	},
+                //        {name: 'name',   type: 'string'	},
+                //        {name: 'title',  type: 'string'	},
+                //        {name: 'data',   type: 'string'	}
+                //    ],
+                //    proxy: App.ProxyMeta('windows'),
+                //    autoLoad: false,
+                //    autoSync: false,
+                //    autoDestroy: false
+                //}),
+                Settings: Ext.create('App.store.Settings'),
+				//Ext.create('Ext.data.Store', {
+                //    fields:  [
+                //        {name: 'guid',   type: 'string'	},
+                //        {name: 'name',   type: 'string'	},
+                //        {name: 'data',   type: 'string'	}
+                //    ],
+                //    proxy: App.ProxySettings(),
+                //    autoLoad: false,
+                //    autoSync: false,
+                //    autoDestroy: false
+                //}),
                 load: function(cb){
                     var me = this;
                     me.Constants.load(function(){
