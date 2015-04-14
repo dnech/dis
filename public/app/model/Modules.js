@@ -12,5 +12,10 @@ Ext.define('App.model.Modules', {
             type: 'json',
             rootProperty: 'data'
         },
+    },
+	listeners: {
+        exception: function(obj, response, operation, eOpts){
+            App.Error.Proxy('Meta:Modules', obj, response, operation, eOpts);
+        }
     }
 });

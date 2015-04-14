@@ -13,5 +13,10 @@ Ext.define('App.model.Tables', {
             type: 'json',
             rootProperty: 'data'
         },
+    },
+	listeners: {
+        exception: function(obj, response, operation, eOpts){
+            App.Error.Proxy('Meta:Tables', obj, response, operation, eOpts);
+        }
     }
 });

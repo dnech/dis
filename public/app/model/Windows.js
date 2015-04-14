@@ -13,5 +13,10 @@ Ext.define('App.model.Windows', {
             type: 'json',
             rootProperty: 'data'
         },
+    },
+	listeners: {
+        exception: function(obj, response, operation, eOpts){
+            App.Error.Proxy('Meta:Windows', obj, response, operation, eOpts);
+        }
     }
 });

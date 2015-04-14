@@ -43,7 +43,11 @@ var Columns = [
 		dataIndex: 'guid',
 		flex: 1,
 		renderer: function(value){
-			return '<img src="images/ico/16/session_idle_time.png"></img> '+value;
+			var str = '<img src="images/ico/16/session_idle_time.png"></img> '+value
+			if (App.CONST.Me.ssid === value) {
+				str = '<b><i>'+str+'</i><b>';
+			}
+			return str;
 		},
 	},{
 		text: 'Update',
