@@ -25,7 +25,7 @@ Ext.define('App.components.window.WindowServer', {
 	height: 		80,
 	
 	loader: 		{
-		url : App.CONST.api.res+'content/',
+		url : 'content/', //App.CONST.api.res+
 		scope:   this.Win,
 		autoLoad: true,
 		scripts: true,
@@ -110,6 +110,8 @@ Ext.define('App.components.window.WindowServer', {
 		me.stateId		= me.src;			//Имя под которым будет храниться информация о положении и размере окна
 		
 		//me.myItems = [];
+		
+		me.loader.url = App.CONST.api.res+'content/';
 		
 		me.loader.params.src = me.src;
 		me.loader.params.id  = me.id;

@@ -1,14 +1,23 @@
 Ext.application({
     requires: [
-				'Ext.grid.*',
-				'Ext.window.Window',
-				'Ext.util.Point',
+				//'Ext.grid.*',
+				//'Ext.window.Window',
+				//'Ext.util.Point',
+				'App.common.Util',
+				'App.common.Event',
+				'App.common.Window',
+				'App.common.Errors',
+				'App.common.Auth',
+				'App.common.Locale',
+				'App.common.Theme',				
 				'App.view.Login',
 				'App.view.Viewport',
 				'App.components.data.Store',
 				'App.components.data.Grid',
                 'App.components.aceeditor.WithToolbar',
-			//	'App.components.window.WindowServer'
+				'App.components.window.WindowServer',
+				'App.components.window.WindowDb'
+
 			//	'Ext.util.base64',
 			//	'Ext.PagingToolbar',
 			//	'Ext.container.Viewport',
@@ -47,8 +56,7 @@ Ext.application({
 		/*****************************************************/
 		/* AUTORIZED */
 		if (Ext.util.Cookies.get('DIS_SESSION_KEY') === null){
-			Ext.get('logo_loading').remove();
-            Ext.create('App.view.Login');
+			App.Auth.ShowLogIn();
 		} else {
 			Ext.Ajax.request({
 				url: App.CONST.api.login,
@@ -62,32 +70,19 @@ Ext.application({
 				success: function(response){
 					var resp = Ext.JSON.decode(response.responseText);
 					if (!resp.success) {
-						App.LogOut();
+						App.Auth.LogOut();
 					} else {
-						App.LogIn(resp.data);
-                        var locale = (App.CONST.Me.config.locale)?App.CONST.Me.config.locale:App.CONST.locale;
-                        var localeurl = Ext.util.Format.format(App.CONST.extdir + 'locale/ext-locale-{0}-debug.js', locale);
-
-                        var theme = (App.CONST.Me.config.theme)?App.CONST.Me.config.theme:App.CONST.theme;
-
-                        Ext.Loader.loadScript({
-                                url: localeurl,
-                                onError: function(){Ext.Msg.alert('Error', 'Error load "'+locale+'" locale.')},
-                                onLoad:  function(){
-                                    App.LoadTheme(theme, App.RunApplication, function(err){
-                                        Ext.Msg.alert('Error', 'Error load theme "'+theme+'.'+err+'".');
-                                    });
-                                }
-                            }
-                        );
-
+						App.Auth.LogIn(resp.data);
+                        App.Locale.load(function(){
+							App.Theme.load(App.RunApplication);
+						});
 					}
 				}
 			});							
 		}
 	},
 	controllers: [
-		'Application', /*'DbActions',*/ 'WinActions'
+		'WinActions', 'Application'
     ],
 	
 	autoCreateViewport: false,

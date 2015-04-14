@@ -53,7 +53,10 @@ function onWinCreate(obj) {
 		onLoad(rec, obj.conf.dataParent.action);
 		onDataModifed(false);
 	} else {
-		Ext.Msg.alert('Error', 'Window not parent.');
+		throw {
+			name: 'Отсутствуют данные родительского окна',
+			message: 'Окно может быть открыто только из родительского окна',
+		};
 	}
 }
 

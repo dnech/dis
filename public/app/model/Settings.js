@@ -12,5 +12,10 @@ Ext.define('App.model.Settings', {
             type: 'json',
             rootProperty: 'data'
         },
+    },
+	listeners: {
+        exception: function(obj, response, operation, eOpts){
+            App.Error.Proxy('Meta:Settings', obj, response, operation, eOpts);
+        }
     }
 });

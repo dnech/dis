@@ -1,11 +1,12 @@
 Ext.define('App.controller.WinActions', {
 	extend: 'Ext.app.Controller',
 	
-	requires: [
-		'App.common.Util',
-        'App.common.Event',
-		'App.common.Window',
-    ],
+	//requires: [
+	//	'App.common.Util',
+    //   'App.common.Event',
+	//	'App.common.Window',
+	//	'App.common.Errors',
+    //],
 	
 	init: function() {
 		var me = this;
