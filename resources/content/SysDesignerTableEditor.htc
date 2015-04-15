@@ -77,7 +77,8 @@ function onLoad( data, action ) {
 		editSystem.setValue(data.system_guid);
 		editName.setValue(data.name);
 		editTitle.setValue(data.title);
-		editValue.setValue(data.config);
+		editValue.setValue(App.Util.Utf8.decode(App.Util.base64.decode(data.config)));
+		editData.setValue(App.Util.Utf8.decode(App.Util.base64.decode(data.data)));
 		setAccess();
 	} catch (err) {
 		Ext.Msg.alert('Error', 'Error load data "'+data.name+'".\n'+err.message);
@@ -91,8 +92,8 @@ function onSave(close) {
 			system_guid: editSystem.getValue(),
 			title:   	 editTitle.getValue(),
 			ro:			 editRo.getValue(),
-			config:		 editValue.getValue(),
-			data:		 App.Util.base64.encode(App.Util.Utf8.encode(editValue.getValue())),
+			config:		 App.Util.base64.encode(App.Util.Utf8.encode(editValue.getValue())),
+			data:		 App.Util.base64.encode(App.Util.Utf8.encode(editData.getValue())),
 		};
 		if (typeof ThisWin.parent !== 'undefined'){
 			
@@ -126,6 +127,7 @@ function setAccess() {
 	editSystem.setDisabled(ro);
 	editTitle.setDisabled(ro);
 	editValue.setDisabled(ro);
+	editData.setDisabled(ro);
 }
 
 function onBeforeClose () {
@@ -225,8 +227,8 @@ var formOptions = ThisWin.Elements.formOptions = Ext.create('Ext.form.Panel', {
 });
 
 var PanelOptions = ThisWin.Elements.PanelOptions = Ext.create('Ext.panel.Panel', {
-    //title: 'Options',
-	//icon: 'images/ico/view16.png',
+    title: 'Options',
+	icon: 'images/ico/view16.png',
 	layout: 'fit',
 	anchor:'100%',
 	height: 130,
@@ -245,24 +247,39 @@ var editValue = ThisWin.Elements.editValue = Ext.create('App.components.aceedito
 	
 var PanelCode = ThisWin.Elements.PanelCode = Ext.create('Ext.panel.Panel', {
     icon: 'images/ico/script16.png',
-	title: 'Value',
+	title: 'Server',
 	border: false,
 	layout: 'fit',
 	anchor:'100% -100',
 	items: [editValue],	
 });
 
+var editData = ThisWin.Elements.editData = Ext.create('App.components.aceeditor.WithToolbar', {
+    //theme: 'eclipse',
+    parser: 'javascript',
+    printMargin: true,
+});
+	
+var PanelData = ThisWin.Elements.PanelData = Ext.create('Ext.panel.Panel', {
+    icon: 'images/ico/script16.png',
+	title: 'Client',
+	border: false,
+	layout: 'fit',
+	anchor:'100% -100',
+	items: [editData],	
+});
 
 
 //===================================================================================	
 //----------------------------------- TABS ------------------------------------------
-var Panels = ThisWin.Elements.Panels = Ext.create('Ext.panel.Panel', {
-	//activeTab: 0,
-	//border: false,
-	layout: 'anchor',
+var Panels = ThisWin.Elements.Panels = Ext.create('Ext.tab.Panel', {
+	activeTab: 0,
+	border: false,
+	layout: 'fit',
     items: [
 		PanelOptions,
 		PanelCode,
+		PanelData
     ],
 });
 
