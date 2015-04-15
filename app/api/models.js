@@ -1,6 +1,7 @@
 // Модели
-var db = global.DB;
-
+var db = global.DB,
+	Sequelize = global.Sequelize,
+	crypto = global.Crypto;
 /* -------------------------------------------------------------- */
 // Сессии
 var Sessions = db.define('Sessions', {
@@ -184,13 +185,22 @@ module.exports = {
 	Model: function (table, ok, err) {
 		// Получаем настройки таблицы
 		try {
-			var config = JSON.parse(table.config);
-			var Model = db.define('Model', config.columns, {
-				tableName:  config.name, 
-				timestamps: true 
-			});
-			Model.CONFIG = config;
-			ok(Model);
+			//if (table.name !== 'sys.tables') {
+				var fn = new Buffer(table.config, 'base64').toString('utf8'),
+					obj = (new Function(fn))(),
+					model = obj.model;
+				var Model = db.define('Model', model.columns, model.settings);
+				Model.CONFIG = obj;
+				ok(Model);
+			/*} else {
+				var config = JSON.parse(table.config);
+				var Model = db.define('Model', config.columns, {
+					tableName:  config.name, 
+					timestamps: true 
+				});
+				Model.CONFIG = config;
+				ok(Model);
+			}*/
 		} catch (error){
 			err('db models', error)
 		}

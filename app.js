@@ -1,10 +1,10 @@
-var express = require('express');
-var router = require('./app/router');
-var http = require('http');
-var path = require('path');
-var uuid = require('node-uuid');
-
-var Sequelize = require('sequelize');
+var express = require('express'),
+	router = require('./app/router'),
+	http = require('http'),
+	path = require('path'),
+	uuid = require('node-uuid'),
+	crypto = require('crypto'),
+	Sequelize = require('sequelize');
 
 db = new Sequelize('test', 'postgres', '', {
       dialect: "postgres", // or 'sqlite', 'mysql', 'mariadb'
@@ -31,6 +31,7 @@ global.RESOURCES = path.join(__dirname, 'resources');
 global.Sequelize = Sequelize;
 global.DB		 = db;
 global.UUID		 = uuid;
+global.Crypto	 = crypto;
 
 var app = express();
 
