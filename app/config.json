@@ -1,0 +1,15 @@
+{
+    "DB_NAME" : "test",
+	"DB_USER" : "postgres",
+	"DB_PASS" : "",
+	"DB_PORT" : 5432,
+	"DB_DIALECT" : "postgres",
+	
+	"SERVER_PORT" : 8080,
+	"SERVER_SALT" : "2a4c13fb6c774b43486450065a732af8",
+	
+	"EXTDIRECT_NAMESPACE" : "ExtRemote",
+    "EXTDIRECT_API_NAME" : "REMOTING_API",
+    "EXTDIRECT_PATH" : "/direct",
+    "EXTDIRECT_PREFIX" : "DX"
+}
