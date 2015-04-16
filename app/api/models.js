@@ -1,7 +1,7 @@
 // Модели
 var db = global.DB,
-	Sequelize = global.Sequelize,
-	crypto = global.Crypto;
+	Sequelize = global.Sequelize;
+	
 /* -------------------------------------------------------------- */
 // Сессии
 var Sessions = db.define('Sessions', {

@@ -43,29 +43,15 @@ ThisWin.Public   = {};
 //============================================================================================================================
 //============================================================================================================================
 var EditWin = 'SysDesignerDataEditor';
+
+var TableConfig = App.Meta.getTable('sys.modules');
+
 //----------------------------------------
 //            ELEMENT Store
 //----------------------------------------
-var Store = Ext.create('Ext.data.Store', {
-	fields:  [
-		{name: 'guid',   	  type: 'string'	},
-		{name: 'system_guid', type: 'string'	},
-		{name: 'name',   	  type: 'string'	},
-		{name: 'data',   	  type: 'string'	},
-		{name: 'ro',   		  type: 'boolean'	},
-		{name: 'createdAt',   type: 'date'	},
-		{name: 'updatedAt',   type: 'date'	},
-	],
-	sorters: [{
-         property: 'name',
-         direction: 'ASC'
-    }],
-	proxy: App.ProxyDB('sys.modules'),
-	groupField: 'system_guid',
-	autoLoad: true,
-	//autoSync: true,
-	//autoDestroy: true,
-});
+var Store = Ext.create('App.components.data.Store', TableConfig.store );
+var Columns = TableConfig.grid.columns;
+
 
 function onWinCreate(obj) {
 	obj.setTitle('Система: Модули');
@@ -233,27 +219,7 @@ var Grid = ThisWin.Elements.Grid = Ext.create('App.components.data.Grid', {
 					}
 				)				
 		})],*/
-		columns: [
-			{ text: 'Id', 		dataIndex: 'id'	,  hidden: true},
-			{ text: 'Guid', 	dataIndex: 'guid', hidden: true},
-			{ text: 'System', 	dataIndex: 'system_guid',
-				renderer: function(value) {
-					var system = App.Designer.SystemStore.findRecord('guid', value);
-					if (system) {
-						return '<img src="images/ico/workflow16.png"></img> '+system.data.title;
-					} else {
-						return '<font style="color:#808080"><i>{...}</i></font>';
-					}
-				},
-			},{
-				text: 'Name',
-				flex: 1,
-				dataIndex: 'name',
-				renderer: function(value, metaData, record) {
-					return  record.data.ro ? '<img src="images/ico/16/lock.png"></img> '+value : '<img src="images/ico/16/code.png"></img> '+value;
-				},
-			}
-		],
+		columns: Columns,
 		listeners: {
 			celldblclick:    onGridEdit,
 			selectionchange: onGridSelectionChange,

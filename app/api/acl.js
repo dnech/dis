@@ -35,6 +35,10 @@ function getUserBySsid(ssid, ok, err) {
 /* Вход по логину и паролю */
 function loginByPass(login, pass, ok, err) {
 	clearOldSession(oldSessionsPeriod, function(){
+		var salt   = global.Salt;
+    	var crypto = global.Crypto;
+    	pass = crypto.createHash('md5').update(salt+pass+salt).digest('hex');
+					
 		var options = {where: {login: login, pass:  pass}};
 		Models.Users.find(options).success(function(user) { if (user) {
 				var session = {

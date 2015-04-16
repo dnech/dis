@@ -32,6 +32,7 @@ global.Sequelize = Sequelize;
 global.DB		 = db;
 global.UUID		 = uuid;
 global.Crypto	 = crypto;
+global.Salt		 = '2a4c13fb6c774b43486450065a732af8';
 
 var app = express();
 

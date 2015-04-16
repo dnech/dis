@@ -129,7 +129,11 @@ Ext.define('App.controller.Application', {
                     var me = this;
                     var record = me.Tables.findRecord('name', name);
                     if (record) {
-                        return App.Util.Utf8.decode(App.Util.base64.decode(record.data.data));
+                        try {
+							return (new Function(App.Util.Utf8.decode(App.Util.base64.decode(record.data.data))))();
+						} catch(err) {
+							console.log('Error get Meta Tables', name);
+						}
                     } else {return undefined;}
                 },
                 getWindow: function(name){
