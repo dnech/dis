@@ -1,15 +1,42 @@
 {
-    "DB_NAME" : "test",
-	"DB_USER" : "postgres",
-	"DB_PASS" : "",
-	"DB_PORT" : 5432,
-	"DB_DIALECT" : "postgres",
-	
-	"SERVER_PORT" : 8080,
-	"SERVER_SALT" : "2a4c13fb6c774b43486450065a732af8",
-	
-	"EXTDIRECT_NAMESPACE" : "ExtRemote",
-    "EXTDIRECT_API_NAME" : "REMOTING_API",
-    "EXTDIRECT_PATH" : "/direct",
-    "EXTDIRECT_PREFIX" : "DX"
+	"db": {
+		"base" : "test",
+		"user" : "postgres",
+		"pass" : "",
+		"port" : 5432,
+		"dialect" : "postgres"
+	},
+	"server": {
+		"salt" : "2a4c13fb6c774b43486450065a732af8",
+		"port": 8080,
+        "logger": "dev",
+        "public": "public",
+		"resources": "resources",
+        "compress": true,
+        "cors": true,
+        "AccessControl": {
+            "AllowOrigin": "*",
+            "AllowMethods": "GET,PUT,POST,DELETE,OPTIONS",
+            "AllowHeaders": "Origin, X-Requested-With, Content-Type, Accept",
+            "AllowCredentials": true,
+            "MaxAge": 3600
+
+        }
+    },
+    "direct": {
+        "rootNamespace": "Ext.app",
+		"nestedNamespaces": ["Auth", "Demo"],
+		"apiName": "REMOTING_API",
+		"apiUrl": "/directapi",
+		"classPath": "/direct",
+		"server": "localhost",
+		"port": "8080",
+		"protocol": "http",
+		"timeout": 30000,
+		"cacheAPI": false,
+		"relativeUrl": false,
+		"appendRequestResponseObjects": true,
+		"enableMetadata": true,
+		"databaseAutoConnection": true
+    }
 }

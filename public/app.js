@@ -3,6 +3,7 @@ Ext.application({
 				//'Ext.grid.*',
 				//'Ext.window.Window',
 				//'Ext.util.Point',
+				'Ext.direct.*',
 				'App.common.Util',
 				'App.common.Event',
 				'App.common.Window',

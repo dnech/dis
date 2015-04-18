@@ -38,7 +38,8 @@ function loginByPass(login, pass, ok, err) {
 		var salt   = global.Salt;
     	var crypto = global.Crypto;
     	pass = crypto.createHash('md5').update(salt+pass+salt).digest('hex');
-					
+		console.log('Login', login, pass, salt, pass);
+		
 		var options = {where: {login: login, pass:  pass}};
 		Models.Users.find(options).success(function(user) { if (user) {
 				var session = {
