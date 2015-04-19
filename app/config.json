@@ -24,11 +24,12 @@
         }
     },
     "direct": {
-        "rootNamespace": "Ext.app",
+        "rootNamespace": "App.Direct",
 		"nestedNamespaces": ["Auth", "Demo"],
 		"apiName": "REMOTING_API",
 		"apiUrl": "/directapi",
-		"classPath": "/direct",
+		"classUrl": "/direct",
+		"classPath": "/app/direct",
 		"server": "localhost",
 		"port": "8080",
 		"protocol": "http",
