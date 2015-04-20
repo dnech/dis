@@ -32,7 +32,7 @@ Ext.application({
     appFolder: 'app',
 		
 	launch: function() {
-		
+		// Direct
 		Ext.direct.Manager.addProvider(App.Direct.REMOTING_API);
 		
 		// TEST DIRECT

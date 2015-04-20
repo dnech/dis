@@ -47,30 +47,52 @@ exports.list = function (req, res) {
 	var action = 'LIST';
 	getTable(table, function (curTable){
 		ACL.checkTables(ssid, curTable, action, function(allow){if (allow){
-			Models.Model(curTable, function(model){
-				/* LIST BEGIN */
+			var fn = new Buffer(curTable.config, 'base64').toString('utf8'),
+				table = (new Function(fn))();
+			if (table.type === 'model') {	
+				Models.Model(curTable, function(model){
+					/* LIST BEGIN */
+					var params = req.query;
+					// Sequelize: limit, offset, order
+					// ExtJS: page, start, limit
+					// ExtJS: sort:[{"property":"firstName","direction":"ASC"}]
+					
+					var options = {};
+					options.offset =  params.start || 0;
+					options.limit  =  params.limit || 50;
+					options.order  =  [];
+						
+					if (typeof(params.sort)==='string'){
+						var sort = JSON.parse('{"data":'+params.sort+'}');
+						sort.data.forEach(function(item, i, arr){
+							options.order.push([item.property, item.direction]);
+						});
+					}
+					
+					model.findAndCountAll(options).success(function(counter) {
+						res.send({success: true, total: counter.count,  data: counter.rows});
+					}).error(function(err){sendError('db', err, res)});
+					/* LIST END */
+				}, function(type, err){sendError(type, err,res)});
+			
+			}
+			if (table.type === 'sql') {	
 				var params = req.query;
-				// Sequelize: limit, offset, order
-				// ExtJS: page, start, limit
-				// ExtJS: sort:[{"property":"firstName","direction":"ASC"}]
-				
 				var options = {};
 				options.offset =  params.start || 0;
 				options.limit  =  params.limit || 50;
-				options.order  =  [];
-					
-				if (typeof(params.sort)==='string'){
-					var sort = JSON.parse('{"data":'+params.sort+'}');
-					sort.data.forEach(function(item, i, arr){
-						options.order.push([item.property, item.direction]);
-					});
-				}
 				
-				model.findAndCountAll(options).success(function(counter) {
-					res.send({success: true, total: counter.count,  data: counter.rows});
-				}).error(function(err){sendError('db', err, res)});
-				/* LIST END */
-			}, function(type, err){sendError(type, err,res)});
+				console.log('table.sql.options', table.sql.options);				
+				global.DB.query(table.sql.query/*, table.sql.options*/)
+					.then(function(results) {
+						res.send({success: true, total: results.length,  data: results});
+					})
+					.error(function(err){sendError('db', err, res)});
+			}
+			//.then(function(answer) {
+			//	  res.send({success: true, total: counter.count,  data: answer});
+			//	})
+			//}
 		} else {sendError('permission', 'Permission denied, table: "'+table+'", action: "'+action+'"', res);}
 		}, function(type, error) {sendError(type, error, res)});
 	}, function(type, error) {sendError(type, error, res)});

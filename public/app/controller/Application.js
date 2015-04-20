@@ -125,14 +125,15 @@ Ext.define('App.controller.Application', {
                         return App.Util.Utf8.decode(App.Util.base64.decode(record.data.data));
                     } else {return undefined;}
                 },
-                getTable: function(name){
-                    var me = this;
+                getTable: function(name, context){
+					var me = this;
                     var record = me.Tables.findRecord('name', name);
                     if (record) {
                         try {
-							return (new Function(App.Util.Utf8.decode(App.Util.base64.decode(record.data.data))))();
+							context = context ? context : this;
+							return (new Function('ThisWin', App.Util.Utf8.decode(App.Util.base64.decode(record.data.data))))(context);
 						} catch(err) {
-							console.log('Error get Meta Tables', name);
+							console.log('Error get Meta Tables', name, err.message);
 						}
                     } else {return undefined;}
                 },

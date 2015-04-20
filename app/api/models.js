@@ -185,22 +185,12 @@ module.exports = {
 	Model: function (table, ok, err) {
 		// Получаем настройки таблицы
 		try {
-			//if (table.name !== 'sys.tables') {
-				var fn = new Buffer(table.config, 'base64').toString('utf8'),
-					obj = (new Function(fn))(),
-					model = obj.model;
-				var Model = db.define('Model', model.columns, model.settings);
-				Model.CONFIG = obj;
-				ok(Model);
-			/*} else {
-				var config = JSON.parse(table.config);
-				var Model = db.define('Model', config.columns, {
-					tableName:  config.name, 
-					timestamps: true 
-				});
-				Model.CONFIG = config;
-				ok(Model);
-			}*/
+			var fn = new Buffer(table.config, 'base64').toString('utf8'),
+				obj = (new Function(fn))(),
+				model = obj.model;
+			var Model = db.define('Model', model.columns, model.settings);
+			Model.CONFIG = obj;
+			ok(Model);
 		} catch (error){
 			err('db models', error)
 		}

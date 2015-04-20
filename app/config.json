@@ -35,7 +35,7 @@
 		"protocol": "http",
 		"timeout": 30000,
 		"cacheAPI": false,
-		"relativeUrl": false,
+		"relativeUrl": true,
 		"appendRequestResponseObjects": true,
 		"enableMetadata": true,
 		"databaseAutoConnection": true

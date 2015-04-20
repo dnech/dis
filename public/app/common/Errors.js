@@ -5,7 +5,7 @@ App.Error =
 		var errorData = Ext.JSON.decode(response.responseText);
 		//console.error('Error Proxy '+area, errorData, operation);
 		Ext.Msg.alert('Error Proxy '+area, errorData.type+'<br>'+errorData.message, function(){
-			if (errorData.type === 'session') {App.LogOut();}
+			if (errorData.type === 'session') {App.Auth.LogOut();}
 		});
 	},
 	
