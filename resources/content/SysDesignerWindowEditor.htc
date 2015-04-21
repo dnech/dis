@@ -55,6 +55,10 @@ function onWinCreate(obj) {
 		SetWinTitle(rec.name, obj.conf.dataParent.action);
 		onWindowLoad(rec, obj.conf.dataParent.action);
 		onDataModifed((obj.conf.dataParent.action === 'add'));
+		
+		if (obj.conf.dataParent.action === 'add' || obj.conf.dataParent.action === 'copy'){
+			Ext.getCmp(ThisWin.id+'_btnSave').setDisabled(true);
+		}
 	} else {
 		throw {
 			name: 'Отсутствуют данные родительского окна',
@@ -1363,12 +1367,13 @@ var Panel = ThisWin.Elements.Panel = Ext.create('Ext.panel.Panel', {
 			var data = getWindowData();
 			App.Window.LoadDbWin(data.name);
         }
-    },/*{
-        text: 'Save',
+    },{
+        id: ThisWin.id+'_btnSave',
+		text: 'Save',
         handler: function() {
 			onWindowSave(false);
         }
-    },*/{
+    },{
         text: 'OK',
         handler: function() {
 			onWindowSave(true);
