@@ -113,21 +113,21 @@ Ext.define('App.controller.Application', {
                 },
                 getConstant: function(name){
                     var me = this;
-                    var record = me.Constants.findRecord('name', name);
+                    var record = me.Constants.findRecord('name', new RegExp("^"+name+"$", "i"));
                     if (record) {
                         return App.Util.Utf8.decode(App.Util.base64.decode(record.data.data));
                     } else {return undefined;}
                 },
                 getModule: function(name){
                     var me = this;
-                    var record = me.Modules.findRecord('name', name);
+                    var record = me.Modules.findRecord('name', new RegExp("^"+name+"$", "i"));
                     if (record) {
                         return App.Util.Utf8.decode(App.Util.base64.decode(record.data.data));
                     } else {return undefined;}
                 },
                 getTable: function(name, context){
 					var me = this;
-                    var record = me.Tables.findRecord('name', name);
+					var record = me.Tables.findRecord('name', new RegExp("^"+name+"$", "i"));
                     if (record) {
                         try {
 							context = context ? context : this;
@@ -139,21 +139,22 @@ Ext.define('App.controller.Application', {
                 },
                 getWindow: function(name){
                     var me = this;
-                    var record = me.Windows.findRecord('name', name);
+                    var record = me.Windows.findRecord('name', new RegExp("^"+name+"$", "i"));
                     if (record) {
-                        return App.Util.Utf8.decode(App.Util.base64.decode(record.data.data));
+						//debugger;                       
+						return App.Util.Utf8.decode(App.Util.base64.decode(record.data.data));
                     } else {return undefined;}
                 },
                 getSetting: function(name){
                     var me = this;
-                    var record = me.Settings.findRecord('name', name);
+                    var record = me.Settings.findRecord('name', new RegExp("^"+name+"$", "i"));
                     if (record) {
                         return App.Util.Utf8.decode(App.Util.base64.decode(record.data.data));
                     } else {return undefined;}
                 },
                 setSetting: function(name, value){
                     var me = this;
-                    var rec = me.Settings.findRecord('name', name);
+                    var rec = me.Settings.findRecord('name', new RegExp("^"+name+"$", "i"));
                     if (rec) {
                         rec.set('data', App.Util.base64.encode(App.Util.Utf8.encode(value)));
                         rec.save({
