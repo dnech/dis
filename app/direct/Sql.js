@@ -130,10 +130,8 @@ var sql = function(scheme, base){
 	me.base	  = base;
 	
 	me.clear = function(){
-		me.preTableList = [];
-		me.preFieldList = [];
-		me.preFromList	= [];
-		me.preJoinList	= [];
+		me.calcTables = [];
+		me.calcFields = [];
 	
 		me.arSELECT = [];
 		me.arFROM   = [];
@@ -145,45 +143,126 @@ var sql = function(scheme, base){
 	};
 	me.clear();
 	
-	me.select = function(fields){
-		me.arSELECT = me.arSELECT.concat(fields);
-		//[
-		//	{src: 'user_guid.name', as: 'UserName'}
-		//]
-	};
+	/*
 	
-	me.from = function(fields){
-		me.arFROM.push({});
-		//[
-		//	{src: 'user_guid.name', as: 'UserName'}
-		//]
-	}
+		// scheme
+		[{
+			name: 'roles',
+			table: '_roles',
+			fields: [
+				{name: 'id',    type: 'integer'},
+				{name: 'guid',  type: 'string'},
+				{name: 'name',  type: 'string'},
+			]
+		},{
+			name: 'users',
+			table: '_users',
+			fields: [
+				{name: 'id',   		type: 'integer' },
+				{name: 'guid',  	type: 'string' },
+				{name: 'name', 		type: 'string' },
+				{name: 'login', 	type: 'string' },
+				{name: 'role_guid',	type: 'link',  src: 'roles', key: 'guid' },
+			]
+		},{
+			name: 'sessions',
+			table: '_sessions',
+			fields: [
+				{name: 'id',   		  	type: 'string'},
+				{name: 'guid',  		type: 'string' },
+				{name: 'user_guid', 	type: 'link',		src: 'users', key: 'guid' },
+				{name: 'sum', 		  	type: 'integer'},
+			]
+		}]
 	
-	
-	
+		// exemple constructor
+		sql(scheme, 'sessions')
+			.select(fields)
+		//	.from('opf', 'opf')
+			.join('user', 'user.id = opf.user_id', 'user')
+			.join('user', 'user.id = opf.user_id', 'user')
+			.where()
+			
+	*/
 	
 	
 	// Get table settings by table name
-	me.getTableSettings = function(name){
-		var tables = me.scheme;
-		for (var i = 0; i < tables.length; i++) {
-			if (tables[i].name === name){
-				return tables[i];
+	me.getSchemeTable = function(name){
+		for (var i = 0; i < me.scheme.length; i++) {
+			if (me.scheme[i].name === name){
+				return me.scheme[i];
 			}
 		}
 	};
-
+	
 	// Get field settings by table settings and field name
-	me.getFieldSettings = function(table, name){
+	me.getSchemeField = function(table, name){
 		for (var i = 0; i < table.fields.length; i++) {
 			if (table.fields[i].name === name){
 				return table.fields[i];
 			}
 		}
 	};
+	
+		
+	// Get table settings by table name
+	// {table:table, as:as}
+	me.getFrom = function(name){
+		for (var i = 0; i < me.arFROM.length; i++) {
+			if (me.arFROM[i].table === name){
+				return me.arFROM[i];
+			}
+		}
+	};
+	
+	// Get field settings by table settings and field name
+	// {src: 'user_guid.name', as: 'UserName'}
+	me.getSelect = function(table, name){
+		for (var i = 0; i < me.arSELECT.length; i++) {
+			if (me.arSELECT[i].name === name){
+				return me.arSELECT[i];
+			}
+		}
+	};
+	
+	/* CONSTRUCTOR */
 
-	me.getPath = function(path){
-		var list = me.preTableList;
+	me.select = function(fields){
+		me.arSELECT = me.arSELECT.concat(fields);
+		//[
+		//	{src: 'user_guid.name', as: 'UserName'}
+		//]
+		return me;
+	};
+	
+	me.from = function(table, as){
+		//as = as || table;
+		me.arFROM.push({table:table, as:as});
+		//[
+		//	{table:table, as:as}
+		//]
+		return me;
+	};
+	
+	me.join = function(table, on, as){
+		//as = as || table;
+		me.arJOIN.push({table:table, on:on, as:as});
+		//[
+		//	{table:table, as:as, on: on}
+		//]
+		return me;
+	};
+	
+	
+	
+	
+	
+
+	//me.calcTables = [];
+	//me.calcFields = [];
+
+	me.getCalcTable = function(path){
+		var list = me.calcTables;
 		for (var i = 0; i < list.length; i++) {
 			if (list[i].path === path){
 				return list[i];
@@ -191,51 +270,58 @@ var sql = function(scheme, base){
 		}
 	};
 
-	me.addPath = function(path, table, field){
-		var list = me.preTableList;
-		if (!me.getPath(path)) {
-			me.preTableList.push({
+	me.addCalcTable = function(path, table, field){
+		var list = me.calcTables;
+		if (!me.getCalcTable(path)) {
+			me.calcTables.push({
 				path:		path,
-				table:		table.table,
+				table:		table,
+				field:		field
 				parent: 	't'+list.length,
-				parentkey:	field.name,
+				parentkey:	field.key,
 				alias:		't'+(list.length+1),
-				aliaskey:   field.key,
-				//src:		field.src,	
+				aliaskey:   field.name,	
 			});
 		}
 	};
 
-	me.calcField = function(field, alias){
-		var base  = me.base;
-		var paths = field.split('.');
-		
-		var tablepath = base.name;
-		var curTable  = base;
-		if (curTable) {
-			for (var i = 0; i < paths.length-1; i++) {
-				var curField = me.getFieldSettings(curTable, paths[i]);
-				if (curField){
-					if (curField.type === 'link') {
-						curTable = me.getTableSettings(curField.src);
-						if (curTable) {
-							tablepath += '.'+curField.name;
-							me.addPath(tablepath, curTable, curField);	
-						} else {throw new Error('Field builder ['+field+']: table "'+curField.src+'" not found');}
-					} else {throw new Error('Field builder ['+field+']: field "'+curField.name+'" in table "'+curTable.table+'" not link');}
-				} else {throw new Error('Field builder ['+field+']: field "'+paths[i]+'" in table "'+curTable.name+'" not found');}
-			}	
-		} else {throw new Error('Field builder ['+field+']: table "'+base.name+'" not found');}
-		
-		var curField = me.getFieldSettings(curTable,paths[paths.length-1]);
-		if (curField || paths[paths.length-1]=='*') {
-			me.preFieldList.push({
-				alias: alias,
-				path:  tablepath,
-				field: curField ? curField.name : '*'
-			});
-		} else {throw new Error('Field builder ['+field+']: field "'+paths[paths.length-1]+'" in table "'+curTable.name+'" not found');}
+	me.addCalcField = function(field, as){
+		var base = getSchemeTable(me.base);
+		if (base) {
+			var paths = field.split('.');
+			
+			var tablepath = base.name;
+			var curTable  = base;
+			if (curTable) {
+				for (var i = 0; i < paths.length-1; i++) {
+					var curField = me.getSchemeField(curTable, paths[i]);
+					if (curField){
+						if (curField.type === 'link') {
+							curTable = me.getSchemeTable(curField.src);
+							if (curTable) {
+								tablepath += '.'+curField.name;
+								me.addCalcTable(tablepath, curTable, curField);	
+							} else {throw new Error('Field builder ['+field+']: table "'+curField.src+'" not found');}
+						} else {throw new Error('Field builder ['+field+']: field "'+curField.name+'" in table "'+curTable.table+'" not link');}
+					} else {throw new Error('Field builder ['+field+']: field "'+paths[i]+'" in table "'+curTable.name+'" not found');}
+				}	
+			} else {throw new Error('Field builder ['+field+']: table "'+base.name+'" not found');}
+			
+			var curField = me.getSchemeField(curTable,paths[paths.length-1]);
+			if (curField || paths[paths.length-1]=='*') {
+				me.calcFields.push({
+					path:  tablepath,
+					field: curField ? curField.name : '*',
+					as:    as,
+				});
+			} else {throw new Error('Field builder ['+field+']: field "'+paths[paths.length-1]+'" in table "'+curTable.name+'" not found');}
+		} else {throw new Error('Field builder: base table "'+me.base+'" not found');}
 	};
+	
+	
+	
+	
+	
 	
 	me.strField = function(table, name, aleas, connect){
 		var res = '"'+table+'"."'+name+'"';
