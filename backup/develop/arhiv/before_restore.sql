@@ -1119,16 +1119,14 @@ SELECT pg_catalog.setval('_roles_id_seq', 3, true);
 -- Name: _session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('_session_id_seq', 280, true);
+SELECT pg_catalog.setval('_session_id_seq', 281, true);
 
 
 --
 -- Data for Name: _sessions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO _sessions (id, user_guid, guid, "createdAt", "updatedAt") VALUES (278, '950ee9b5-12c7-bbce-0bae-cc6f34e863ee', '76430c0f-2b27-49da-b166-81fcb1c49e01', '2015-04-22 14:28:20.124+06', '2015-04-22 17:34:24.822+06');
-INSERT INTO _sessions (id, user_guid, guid, "createdAt", "updatedAt") VALUES (279, '950ee9b5-12c7-bbce-0bae-cc6f34e863ee', '8f9608e3-3dac-4803-b349-8627d4659aa0', '2015-04-22 17:27:52.861+06', '2015-04-22 18:21:12.756+06');
-INSERT INTO _sessions (id, user_guid, guid, "createdAt", "updatedAt") VALUES (280, 'c75426c2-02e1-4def-a499-5f7d31c3ac1a', '7dcbd1b1-f249-409e-8ce7-8b49a2ad3fc7', '2015-04-22 17:44:11.985+06', '2015-04-22 18:07:13.805+06');
+INSERT INTO _sessions (id, user_guid, guid, "createdAt", "updatedAt") VALUES (281, '950ee9b5-12c7-bbce-0bae-cc6f34e863ee', '0a93f654-eef8-40ed-8f4c-df881363170b', '2015-04-22 20:39:36.918+06', '2015-04-22 20:39:59.147+06');
 
 
 --

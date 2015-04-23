@@ -39,6 +39,15 @@ exports.acl = function (req, res) {
 	}, function(type, error) {sendError(type, error, res)});
 };
 
+function quoteString(val){
+  return null == val ? '' : String(val);
+}
+
+function quoteField(field) {
+  field = field.replace(/"/g, '""');
+  return '"' + field + '"';
+}
+
 //-------------------------------------------------------------------------
 // LIST
 exports.list = function (req, res) {
@@ -79,15 +88,90 @@ exports.list = function (req, res) {
 			if (table.type === 'sql') {	
 				var params = req.query;
 				var options = {};
-				options.offset =  params.start || 0;
-				options.limit  =  params.limit || 50;
 				
-				console.log('table.sql.options', table.sql.options);				
-				global.DB.query(table.sql.query/*, table.sql.options*/)
-					.then(function(results) {
-						res.send({success: true, total: results.length,  data: results});
-					})
+				// LIMIT
+				options.limit = '';
+				try {
+					var offset =  parseInt(params.start, 10) || 0;
+					var limit  =  parseInt(params.limit, 10) || 50;
+					options.limit = ' LIMIT '+limit+' OFFSET '+offset+' ';
+				} catch(err){
+					sendError('db', 'Error limit data '+err.message, res);
+				}
+				
+				// FILTER
+				options.filter = '';
+				try {
+					if (typeof(params.filter)==='string'){
+						var filter = JSON.parse('{"data":'+params.filter+'}');
+						filter.data.forEach(function(item, i, arr){
+							var property = quoteField(property);
+							var value = quoteString(value);
+							options.filter += ' '+property+' LIKE \'%'+value+'%\' AND ';
+						});
+					}
+				} catch(err){
+					sendError('db', 'Error filter data '+err.message, res);
+				}
+				
+				// SORT
+				options.sort = '';
+				try {
+					if (typeof(params.sort)==='string'){
+						var sort = JSON.parse('{"data":'+params.sort+'}');
+						sort.data.forEach(function(item, i, arr){
+							var direction = (quoteString(item.direction)!=='ASC')?'DESC':'ASC';
+							options.sort += ' '+quoteField(item.property)+' '+direction+', ';
+						});
+					}
+				} catch(err){
+					sendError('db', 'Error sort data '+err.message, res);
+				}
+				
+				ACL.getUserBySsid(ssid, function(curSession, curUser, curRole){
+					var sql		 = table.sql.query;
+
+					sql = sql.replace('%SESSION_GUID%',		curSession.dataValues.guid);
+					sql = sql.replace('%USER_GUID%',  		curUser.dataValues.guid);
+					sql = sql.replace('%USER_NAME%',		curUser.dataValues.name);
+					sql = sql.replace('%USER_LOGIN%',		curUser.dataValues.login);
+					sql = sql.replace('%ROLE_GUID%',		curRole.dataValues.guid);
+					sql = sql.replace('%ROLE_NAME%',		curRole.dataValues.name);
+					sql = sql.replace('%FILTER%',			options.filter);
+					
+					var countsql = sql;
+					countsql = countsql.replace('%SORT%',	'');
+					countsql = countsql.replace('%LIMIT%',	'');
+					countsql = 'SELECT COUNT(*) ' + countsql.substr(countsql.indexOf('FROM'));
+					countsql = countsql.substr(0, countsql.indexOf('ORDER'));
+					
+					
+					sql = sql.replace('%SORT%',				options.sort);
+					sql = sql.replace('%LIMIT%',			options.limit);
+					
+					
+					
+					//console.log('====================================');
+					//console.log('table.sql', table.sql);
+					//console.log('++++++++++++++++++++++++++++++++++++');
+					//console.log('sql', sql);
+					
+					//console.log('countsql', countsql);
+					
+					global.DB.query(countsql)
+						.then(function(countresult) {
+							//console.log('count', countresult[0].count);
+							//res.send({success: true, total: parseInt(countresult[0].count),  data: results});
+							global.DB.query(sql /*, table.sql.options*/)
+								.then(function(results) {
+									res.send({success: true, total: parseInt(countresult[0].count),  data: results});
+								})
+							.error(function(err){sendError('db', err, res)});
+						})
 					.error(function(err){sendError('db', err, res)});
+					
+					
+				}, function(type, error) {sendError(type, error, res)});
 			}
 			//.then(function(answer) {
 			//	  res.send({success: true, total: counter.count,  data: answer});
