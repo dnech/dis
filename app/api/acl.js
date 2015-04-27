@@ -14,16 +14,17 @@ function clearOldSession(delta, ok, err) {
 	Models.Sessions.destroy({ where: {updatedAt: {$lt: oldTime,}}})
 	*/
 	Models.Sessions.destroy({ where: '"updatedAt" < NOW() - INTERVAL \'1 hour\''}, { raw: true })	
-		.success(function() {ok();}).error(function(error){err('session',error)});
+		.then(function() {ok();})
+		.error(function(error){err('session',error)});
 }
 
 /* Поиск пользователя по сессии */
 function getUserBySsid(ssid, ok, err) {
 	clearOldSession(oldSessionsPeriod, function(){
-		Models.Sessions.find({where: {guid: ssid}}).success(function(session) {if (session) {
-			session.updateAttributes({}).success(function() {
-				Models.Users.find({where: {guid: session.user_guid}}).success(function(user) {if (user) {
-					Models.Roles.find({where: {guid: user.role_guid}}).success(function(role) {if (role) {
+		Models.Sessions.find({where: {guid: ssid}}).then(function(session) {if (session) {
+			session.updateAttributes({}).then(function() {
+				Models.Users.find({where: {guid: session.user_guid}}).then(function(user) {if (user) {
+					Models.Roles.find({where: {guid: user.role_guid}}).then(function(role) {if (role) {
 						ok(session, user, role);
 					} else {err('session', 'Role not found');}}).error(function(error){err('session', error)});
 				} else {err('session', 'User not found');}}).error(function(error){err('session', error)});
@@ -41,13 +42,13 @@ function loginByPass(login, pass, ok, err) {
 		console.log('Login', login, pass, salt, pass);
 		
 		var options = {where: {login: login, pass:  pass}};
-		Models.Users.find(options).success(function(user) { if (user) {
+		Models.Users.find(options).then(function(user) { if (user) {
 				var session = {
 					guid: global.UUID.v4(),
 					user_guid: user.guid
 				};
 				Models.Sessions.build(session).save()
-					.success(function() {
+					.then(function() {
 						getUserBySsid(session.guid, function(session, user, role){
 							ok({name:user.name, login:user.login, ssid: session.guid, role: role.name, config: user.config, extend: role.extend});
 						}, err);
@@ -69,7 +70,7 @@ function loginBySsid(ssid, ok, err) {
 function logout(ssid, ok, err) {
 	clearOldSession(oldSessionsPeriod, function(){
 		Models.Sessions.destroy({ where: {guid: ssid}})
-			.success(function() {ok({ssid: ssid});}).error(function(error){err('session', error)});
+			.then(function() {ok({ssid: ssid});}).error(function(error){err('session', error)});
 	}, err);
 }
 
@@ -90,11 +91,11 @@ function checkConstants(ssid, constant, action, allow, err) {
 	getUserBySsid(ssid, function(curSession, curUser, curRole){
 		var extend = JSON.parse(curRole.config);
 		if (extend.constants[action]){ 
-			allow(true); // Allow by role
+			allow(true, curSession, curUser, curRole); // Allow by role
 		} else {
-			Models.AclConstants.find({ where: {role_guid: curRole.guid, constant_guid: constant.guid}}).success(function(curACL) {if (curACL) {
-				allow(curACL[getActionColumn(action)]);	
-			} else {allow(false)}}).error(function(error){err('permission', error)}); // Find AclModules
+			Models.AclConstants.find({ where: {role_guid: curRole.guid, constant_guid: constant.guid}}).then(function(curACL) {if (curACL) {
+				allow(curACL[getActionColumn(action)], curSession, curUser, curRole);	
+			} else {allow(false, curSession, curUser, curRole)}}).error(function(error){err('permission', error)}); // Find AclModules
 		}
 	}, err); // Find User
 }
@@ -104,11 +105,11 @@ function checkModules(ssid, module, action, allow, err) {
 	getUserBySsid(ssid, function(curSession, curUser, curRole){
 		var extend = JSON.parse(curRole.config);
 		if (extend.modules[action]){ 
-			allow(true); // Allow by role
+			allow(true, curSession, curUser, curRole); // Allow by role
 		} else {
-			Models.AclModules.find({ where: {role_guid: curRole.guid, module_guid: module.guid}}).success(function(curACL) {if (curACL) {
-				allow(curACL[getActionColumn(action)]);	
-			} else {allow(false)}}).error(function(error){err('permission', error)}); // Find AclModules
+			Models.AclModules.find({ where: {role_guid: curRole.guid, module_guid: module.guid}}).then(function(curACL) {if (curACL) {
+				allow(curACL[getActionColumn(action)], curSession, curUser, curRole);	
+			} else {allow(false, curSession, curUser, curRole)}}).error(function(error){err('permission', error)}); // Find AclModules
 		}
 	}, err); // Find User
 }
@@ -118,11 +119,11 @@ function checkTables(ssid, table, action, allow, err) {
 	getUserBySsid(ssid, function(curSession, curUser, curRole){
 		var extend = JSON.parse(curRole.config);
 		if (extend.tables[action]){ 
-			allow(true); // Allow by role
+			allow(true, curSession, curUser, curRole); // Allow by role
 		} else {
-			Models.AclTables.find({ where: {role_guid: curRole.guid, table_guid: table.guid}}).success(function(curACL) {if (curACL) {
-				allow(curACL[getActionColumn(action)]);	
-			} else {allow(false)}}).error(function(error){err('permission', error)}); // Find AclTables
+			Models.AclTables.find({ where: {role_guid: curRole.guid, table_guid: table.guid}}).then(function(curACL) {if (curACL) {
+				allow(curACL[getActionColumn(action)], curSession, curUser, curRole);	
+			} else {allow(false, curSession, curUser, curRole)}}).error(function(error){err('permission', error)}); // Find AclTables
 		}
 	}, err); // Find User
 }
@@ -132,11 +133,11 @@ function checkWindows(ssid, window, action, allow, err) {
 	getUserBySsid(ssid, function(curSession, curUser, curRole){
 		var extend = JSON.parse(curRole.config);
 		if (extend.windows[action]){ 
-			allow(true); // Allow by role
+			allow(true, curSession, curUser, curRole); // Allow by role
 		} else {
-			Models.AclWindows.find({ where: {role_guid: curRole.guid, window_guid: window.guid}}).success(function(curACL) {if (curACL) {
-				allow(curACL[getActionColumn(action)]);	
-			} else {allow(false)}}).error(function(error){err('permission', error)}); // Find AclWindows
+			Models.AclWindows.find({ where: {role_guid: curRole.guid, window_guid: window.guid}}).then(function(curACL) {if (curACL) {
+				allow(curACL[getActionColumn(action)], curSession, curUser, curRole);	
+			} else {allow(false, curSession, curUser, curRole)}}).error(function(error){err('permission', error)}); // Find AclWindows
 		}
 	}, err); // Find User
 }

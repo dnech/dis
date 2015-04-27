@@ -17,20 +17,29 @@ var DbConfig 		= nconf.get("db"),
 db = new Sequelize(DbConfig.base, DbConfig.user, DbConfig.pass, {
       dialect: DbConfig.dialect,   // or 'sqlite', 'mysql', 'mariadb'
       port:    DbConfig.port,      // or 3306 (5432 for postgres)
+	  
+	  timezone: DbConfig.timezone,
+	  
+	  pool: {
+		max: 5,
+		min: 0,
+		idle: 10000
+	  },
+  
 	  logging: function(log){
         //console.log(log);
       }
   });
 
-db
-  .authenticate()
-  .complete(function(err) {
-    if (!!err) {
-      console.log('Unable to connect to the database:', err)
-    } else {
-      console.log('Connection has been established successfully.')
-    }
-  });
+//db
+//  .authenticate()
+//  .complete(function(err) {
+//    if (!!err) {
+//      console.log('Unable to connect to the database:', err)
+//    } else {
+//      console.log('Connection has been established successfully.')
+//    }
+//  });
  
 /*  */ 
 // Init

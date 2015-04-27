@@ -4,9 +4,11 @@ Ext.application({
 				//'Ext.window.Window',
 				//'Ext.util.Point',
 				'Ext.direct.*',
+				//'Ext.ux.grid.FiltersFeature',
 				'App.common.Util',
 				'App.common.Event',
 				'App.common.Window',
+				'App.common.Content',
 				'App.common.Errors',
 				'App.common.Auth',
 				'App.common.Locale',
@@ -38,7 +40,7 @@ Ext.application({
 		// TEST DIRECT
 		App.Direct.Test.create({}, function(answer){
 			//debugger;
-			console.log(answer);
+			//console.log(answer);
 		});
 		
 		App.CONST = {
@@ -47,7 +49,7 @@ Ext.application({
             extdir:		'ext-5.1/',
 			locale:		'ru',
 			theme:		'classic',
-			timezone:	'+07:00',
+			//timezone:	'+07:00',
 			api: {
 				login: 	'/api/auth/login',
 				logout: '/api/auth/logout'
@@ -58,7 +60,10 @@ Ext.application({
 		
 		Ext.Loader.setConfig({enabled: true});
 		Ext.Loader.setPath('Ext.ux', App.CONST.extdir + 'src/ux');
-
+		//Ext.require([
+		//	'Ext.ux.grid.FiltersFeature'
+		//]);
+		
 		Ext.QuickTips.init();
 		Ext.state.Manager.setProvider(Ext.create('Ext.state.LocalStorageProvider')); 
 

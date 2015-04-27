@@ -229,10 +229,12 @@ Ext.define('App.components.window.WindowServer', {
 		//          ЗАВЕРШАЮЩАЯ ОТРИСОВКА
 		//
 		//------------------------------------------------------------------------------------------------------------------------------
-		if (me.BtnRender){
-			Ext.getCmp(me.ToRender).getDockedItems()[0].add(me.linkButton);
-		}	
-		Ext.getCmp(me.ToRender).add(me);
+		if (Ext.getCmp(me.ToRender)) {
+			if (me.BtnRender){
+				Ext.getCmp(me.ToRender).getDockedItems()[0].add(me.linkButton);
+			}	
+			Ext.getCmp(me.ToRender).add(me);
+		}
 		
 		App.components.window.WindowServer.superclass.initComponent.apply(me, arguments);
 		App.Event.fire('win_init',{sender:me});

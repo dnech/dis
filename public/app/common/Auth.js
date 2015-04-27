@@ -9,7 +9,7 @@ App.Auth =
 	//--------------------------------------------------------------
 	LogIn: function(user){
 			Ext.util.Cookies.set('DIS_SESSION_KEY', user.ssid);
-			
+			Ext.util.Cookies.set('DIS_LOGIN_USER', user.login),
 			/***********************************/
 			/* U P D A T E   C O N S T A N T S */
 			/***********************************/

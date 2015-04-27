@@ -21,11 +21,11 @@ function getConstants(ssid, res){
 	ACL.getUserBySsid(ssid, function(curSession, curUser, curRole){
 		var extend = JSON.parse(curRole.config);
 		if (extend.constants['USE']){ 
-			Models.sysConstants.findAndCountAll().success(function(records) {
+			Models.sysConstants.findAndCountAll().then(function(records) {
 				res.send({success: true, total: records.count,  data: records.rows});
 			}).error(function(err){sendError('meta', err, res)});
 		} else {
-			Models.AclConstants.findAndCountAll({ where: {role_guid: curRole.guid}, include: [Models.sysConstants]}).success(function(records) {
+			Models.AclConstants.findAndCountAll({ where: {role_guid: curRole.guid}, include: [Models.sysConstants]}).then(function(records) {
 				var recs = [];
 				for (var i=0; i<records.count; i++) {
 					if (records.rows[i][ACL.getActionColumn('USE')]) {
@@ -43,11 +43,11 @@ function getModules(ssid, res){
 	ACL.getUserBySsid(ssid, function(curSession, curUser, curRole){
 		var extend = JSON.parse(curRole.config);
 		if (extend.modules['USE']){ 
-			Models.sysModules.findAndCountAll().success(function(records) {
+			Models.sysModules.findAndCountAll().then(function(records) {
 				res.send({success: true, total: records.count,  data: records.rows});
 			}).error(function(err){sendError('meta', err, res)});
 		} else {
-			Models.AclModules.findAndCountAll({ where: {role_guid: curRole.guid}, include: [Models.sysModules]}).success(function(records) {
+			Models.AclModules.findAndCountAll({ where: {role_guid: curRole.guid}, include: [Models.sysModules]}).then(function(records) {
 				var recs = [];
 				for (var i=0; i<records.count; i++) {
 					if (records.rows[i][ACL.getActionColumn('USE')]) {
@@ -66,11 +66,11 @@ function getTables(ssid, res){
 		var extend = JSON.parse(curRole.config);
 		if (extend.tables['USE'] || extend.tables['LIST'] || extend.tables['CREATE'] ||
 			extend.tables['READ'] || extend.tables['UPDATE'] || extend.tables['DELETE']){ 
-			Models.sysTables.findAndCountAll().success(function(records) {
+			Models.sysTables.findAndCountAll().then(function(records) {
 				res.send({success: true, total: records.count,  data: records.rows});
 			}).error(function(err){sendError('meta', err, res)});
 		} else {
-			Models.AclTables.findAndCountAll({ where: {role_guid: curRole.guid}, include: [Models.sysTables]}).success(function(records) {
+			Models.AclTables.findAndCountAll({ where: {role_guid: curRole.guid}, include: [Models.sysTables]}).then(function(records) {
 				var recs = [];
 				for (var i=0; i<records.count; i++) {
 					var rec = records.rows[i];
@@ -91,11 +91,11 @@ function getWindows(ssid, res){
 	ACL.getUserBySsid(ssid, function(curSession, curUser, curRole){
 		var extend = JSON.parse(curRole.config);
 		if (extend.windows['USE']){ 
-			Models.sysWindows.findAndCountAll().success(function(records) {
+			Models.sysWindows.findAndCountAll().then(function(records) {
 				res.send({success: true, total: records.count,  data: records.rows});
 			}).error(function(err){sendError('meta', err, res)});
 		} else {
-			Models.AclWindows.findAndCountAll({ where: {role_guid: curRole.guid}, include: [Models.sysWindows]}).success(function(records) {
+			Models.AclWindows.findAndCountAll({ where: {role_guid: curRole.guid}, include: [Models.sysWindows]}).then(function(records) {
 				var recs = [];
 				for (var i=0; i<records.count; i++) {
 					if (records.rows[i][ACL.getActionColumn('USE')]) {

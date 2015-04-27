@@ -182,7 +182,8 @@ Ext.define('App.controller.Application', {
             
             App.Include = function(name, hideerror){
                 var error = function(modul, message){
-                    if (!hideerror){
+                    console.log('Ошибка загрузки модуля "'+modul+'"!',message);
+					if (!hideerror){
                         App.Error.Msg('Ошибка загрузки модуля!', 'Модуль: '+modul+'<br>'+message, function() {
                             App.Window.LoadServerWin('SysDesignerConstants');
                         });
@@ -206,12 +207,7 @@ Ext.define('App.controller.Application', {
             // LOAD APP MODULE
             App.Meta.load(function(){
                 Ext.get('logo_loading').remove();
-
-                var view = (App.CONST.Me.config.view)?App.CONST.Me.config.view:App.CONST.view;
-
-                Ext.create('App.view.'+view);
-
-                var module = App.Meta.getConstant('AppModule');
+				var module = App.Meta.getConstant('AppModule');
                 if (module) {
                     (new Function(module))();
                 } else {

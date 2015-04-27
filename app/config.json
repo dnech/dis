@@ -4,7 +4,8 @@
 		"user" : "postgres",
 		"pass" : "",
 		"port" : 5432,
-		"dialect" : "postgres"
+		"dialect" : "postgres",
+		"timezone" : "+07:00"
 	},
 	"server": {
 		"salt" : "2a4c13fb6c774b43486450065a732af8",

@@ -18,7 +18,7 @@ function sendError(type, error, res){
 
 /* Получить таблицу */
 function getTable(name, ok, err){
-	Models.sysTables.find({ where: {name: name}}).success(function(curTable) {if (curTable) {
+	Models.sysTables.find({ where: {name: name}}).then(function(curTable) {if (curTable) {
 		ok(curTable);
 	} else {err('db', 'Table "'+name+'" not found.')}
 	}).error(function(error){err('db', error)});
@@ -48,6 +48,42 @@ function quoteField(field) {
   return '"' + field + '"';
 }
 
+function getFilter(operator, property, value) {
+	if (typeof value === 'number') {
+		if (operator === 'lt') {
+			return ' '+property+' < '+value+' AND ';
+		}
+		if (operator === 'gt') {
+			return ' '+property+' > '+value+' AND ';
+		}
+		if (operator === 'eq') {
+			return ' '+property+' = '+value+' AND ';
+		}
+	}
+	
+	if (typeof value === 'string') {
+		value = quoteString(value);
+		if (operator === 'like') {
+			return ' ( '
+					+property+' LIKE \''+value+'%\' OR '
+					+property+' LIKE \'%'+value+'%\' OR '
+					+property+' LIKE \'%'+value+'\' OR '
+					+property+' = \''+value+'\' '
+					+') AND ';
+		}
+		if (operator === 'lt') {
+			return ' '+property+' < \''+value+'\' AND ';
+		}
+		if (operator === 'gt') {
+			return ' '+property+' > \''+value+'\' AND ';
+		}
+		if (operator === 'eq') {
+			return ' '+property+' = \''+value+'\' AND ';
+		}
+	}
+	return '';
+}
+
 //-------------------------------------------------------------------------
 // LIST
 exports.list = function (req, res) {
@@ -55,7 +91,7 @@ exports.list = function (req, res) {
 	var table  = req.params.table;
 	var action = 'LIST';
 	getTable(table, function (curTable){
-		ACL.checkTables(ssid, curTable, action, function(allow){if (allow){
+		ACL.checkTables(ssid, curTable, action, function(allow, curSession, curUser, curRole){if (allow){
 			var fn = new Buffer(curTable.config, 'base64').toString('utf8'),
 				table = (new Function(fn))();
 			if (table.type === 'model') {	
@@ -78,7 +114,7 @@ exports.list = function (req, res) {
 						});
 					}
 					
-					model.findAndCountAll(options).success(function(counter) {
+					model.findAndCountAll(options).then(function(counter) {
 						res.send({success: true, total: counter.count,  data: counter.rows});
 					}).error(function(err){sendError('db', err, res)});
 					/* LIST END */
@@ -105,9 +141,11 @@ exports.list = function (req, res) {
 					if (typeof(params.filter)==='string'){
 						var filter = JSON.parse('{"data":'+params.filter+'}');
 						filter.data.forEach(function(item, i, arr){
-							var property = quoteField(property);
-							var value = quoteString(value);
-							options.filter += ' '+property+' LIKE \'%'+value+'%\' AND ';
+							var operator = quoteString(item.operator);
+							var property = table.sql.filters[item.property] || quoteField(item.property);
+							var value    = item.value;
+							
+							options.filter += getFilter(operator, property, value);
 						});
 					}
 				} catch(err){
@@ -128,26 +166,54 @@ exports.list = function (req, res) {
 					sendError('db', 'Error sort data '+err.message, res);
 				}
 				
-				ACL.getUserBySsid(ssid, function(curSession, curUser, curRole){
-					var sql		 = table.sql.query;
+				// EXTRA
+				options.ExtraParams = table.sql.params || {};
+				try {
+					if (typeof(params.ExtraParams)==='string'){
+						var params = JSON.parse('{"data":'+params.ExtraParams+'}');
+						for(var key in params.data) {
+						  options.ExtraParams[key] = params.data[key];
+						}
+					}
+				} catch(err){
+					sendError('db', 'Error sort data '+err.message, res);
+				}
+				
 
+					var sql		= table.sql.query;
+					sql 		= sql.replace('%FILTER%',			options.filter);
+					sql 		= sql.replace('%SORT%',				options.sort);
+					sql 		= sql.replace('%LIMIT%',			options.limit);
+					
+					var countsql = table.sql.query;
+					countsql = countsql.replace('%FILTER%',			options.filter);
+					countsql = countsql.replace('%SORT%',	'');
+					countsql = countsql.replace('%LIMIT%',	'');
+					countsql = 'SELECT COUNT(*) ' + countsql.substr(countsql.indexOf('FROM'));
+					countsql = countsql.substr(0, countsql.indexOf('ORDER'));
+					
+					for(var key in options.ExtraParams) {
+						var value = options.ExtraParams[key];
+						if (typeof(value) === 'function') {
+							value = value(options.ExtraParams, this);
+						}
+						sql      =      sql.replace('%PARAMS_'+key+'%',	value);
+						countsql = countsql.replace('%PARAMS_'+key+'%',	value);
+					}
+						
 					sql = sql.replace('%SESSION_GUID%',		curSession.dataValues.guid);
 					sql = sql.replace('%USER_GUID%',  		curUser.dataValues.guid);
 					sql = sql.replace('%USER_NAME%',		curUser.dataValues.name);
 					sql = sql.replace('%USER_LOGIN%',		curUser.dataValues.login);
 					sql = sql.replace('%ROLE_GUID%',		curRole.dataValues.guid);
 					sql = sql.replace('%ROLE_NAME%',		curRole.dataValues.name);
-					sql = sql.replace('%FILTER%',			options.filter);
 					
-					var countsql = sql;
-					countsql = countsql.replace('%SORT%',	'');
-					countsql = countsql.replace('%LIMIT%',	'');
-					countsql = 'SELECT COUNT(*) ' + countsql.substr(countsql.indexOf('FROM'));
-					countsql = countsql.substr(0, countsql.indexOf('ORDER'));
-					
-					
-					sql = sql.replace('%SORT%',				options.sort);
-					sql = sql.replace('%LIMIT%',			options.limit);
+					countsql = countsql.replace('%SESSION_GUID%',		curSession.dataValues.guid);
+					countsql = countsql.replace('%USER_GUID%',  		curUser.dataValues.guid);
+					countsql = countsql.replace('%USER_NAME%',		curUser.dataValues.name);
+					countsql = countsql.replace('%USER_LOGIN%',		curUser.dataValues.login);
+					countsql = countsql.replace('%ROLE_GUID%',		curRole.dataValues.guid);
+					countsql = countsql.replace('%ROLE_NAME%',		curRole.dataValues.name);
 					
 					
 					
@@ -155,23 +221,27 @@ exports.list = function (req, res) {
 					//console.log('table.sql', table.sql);
 					//console.log('++++++++++++++++++++++++++++++++++++');
 					//console.log('sql', sql);
+					//console.log('countsql', countsql);
 					
 					//console.log('countsql', countsql);
 					
-					global.DB.query(countsql)
-						.then(function(countresult) {
-							//console.log('count', countresult[0].count);
+					global.DB.query(countsql/*, { type: global.DB.QueryTypes.SELECT}*/)
+						.then(function(counts, meta) {
+							console.log('count', counts, counts[0].count, meta);
 							//res.send({success: true, total: parseInt(countresult[0].count),  data: results});
-							global.DB.query(sql /*, table.sql.options*/)
+							global.DB.query(sql, { type: global.DB.QueryTypes.SELECT})
 								.then(function(results) {
-									res.send({success: true, total: parseInt(countresult[0].count),  data: results});
+									console.log('results1', results.length);
+									if (typeof(table.sql.recordsmodfn) === 'function') {
+										results = table.sql.recordsmodfn(results);
+									}
+									console.log('results2', results.length);
+									res.send({success: true, total: parseInt(counts[0].count),  data: results});
 								})
 							.error(function(err){sendError('db', err, res)});
 						})
 					.error(function(err){sendError('db', err, res)});
-					
-					
-				}, function(type, error) {sendError(type, error, res)});
+			
 			}
 			//.then(function(answer) {
 			//	  res.send({success: true, total: counter.count,  data: answer});
@@ -190,15 +260,16 @@ exports.create = function (req, res) {
 	var action = 'CREATE';
 	
 	getTable(table, function (curTable){
-		ACL.checkTables(ssid, curTable, action, function(allow){if (allow){
+		ACL.checkTables(ssid, curTable, action, function(allow, session, user, role){if (allow){
 			Models.Model(curTable, function(model){
 				/* CREATE BEGIN */
 				var params = req.body;
 				delete params.id;
 				params.guid = global.UUID.v4();
-				
+				params.createdBy = user.guid;
+				params.updatedBy = user.guid;
 				model.create(params)
-					.success(function(newrecord) {
+					.then(function(newrecord) {
 						sendOk(newrecord.values, res);
 					}).error(function(err){sendError('db', err, res)})
 				/* CREATE END */
@@ -215,11 +286,11 @@ exports.read = function (req, res) {
 	var table  = req.params.table;
 	var action = 'READ';
 	getTable(table, function (curTable){
-		ACL.checkTables(ssid, curTable, action, function(allow){if (allow){
+		ACL.checkTables(ssid, curTable, action, function(allow, session, user, role){if (allow){
 			Models.Model(curTable, function(model){
 				/* READ BEGIN */
 				var params = req.query;
-				model.find(params.id).success(function(record) {
+				model.find(params.id).then(function(record) {
 					sendOk(record, res);
 				}).error(function(err){sendError('db', err, res)})
 				/* READ END */
@@ -236,13 +307,14 @@ exports.update = function (req, res) {
 	var action = 'UPDATE';
 	
 	getTable(table, function (curTable){
-		ACL.checkTables(ssid, curTable, action, function(allow){if (allow){
+		ACL.checkTables(ssid, curTable, action, function(allow, session, user, role){if (allow){
 			Models.Model(curTable, function(model){
 				/* UPDATE BEGIN */
 				var params = req.body;
 				delete params.id;
-				model.find(req.params.id).success(function(user) {
-					user.updateAttributes(params).success(function() {
+				params.updatedBy = user.guid;
+				model.find(req.params.id).then(function(user) {
+					user.updateAttributes(params).then(function() {
 						res.send({success: true});
 					}).error(function(err){sendError('db', err, res)})
 				}).error(function(err){sendError('db', err, res)})
@@ -261,14 +333,16 @@ exports.delete = function (req, res) {
 	var action = 'DELETE';
 	
 	getTable(table, function (curTable){
-		ACL.checkTables(ssid, curTable, action, function(allow){if (allow){
+		ACL.checkTables(ssid, curTable, action, function(allow, session, user, role){if (allow){
 			Models.Model(curTable, function(model){
 				/* DELETE BEGIN */
 				var id = req.params.id;
-				model.find(req.params.id).success(function(user) {
-					user.destroy().success(function() {
-						res.send({success: true});
-					}).error(function(err){sendError('db', err, res)})
+				model.find(req.params.id).then(function(record) {
+					if (record) {
+						record.destroy().then(function() {
+							res.send({success: true});
+						}).error(function(err){sendError('db', err, res)})
+					} else {sendError('db', 'Error find record '+req.params.id, res);}
 				}).error(function(err){sendError('db', err, res)})
 				/* DELETE END */
 			}, function(type, err){sendError(type, err,res)});

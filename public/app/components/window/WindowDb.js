@@ -152,9 +152,14 @@ Ext.define('App.components.window.WindowDb', {
 		//          ЗАВЕРШАЮЩАЯ ОТРИСОВКА
 		//
 		//------------------------------------------------------------------------------------------------------------------------------
+		//debugger;
 		if (me.BtnRender){
-			Ext.getCmp(me.ToRender).getDockedItems()[0].add(me.linkButton);
-		}	
+			try {
+				Ext.getCmp(me.ToRender).getDockedItems()[0].add(me.linkButton);		
+			} catch(err) {
+				console.log('Error render linkButton');
+			}
+		}
 		Ext.getCmp(me.ToRender).add(me);
 		
 		App.components.window.WindowDb.superclass.initComponent.apply(me, arguments);

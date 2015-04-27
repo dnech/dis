@@ -55,13 +55,17 @@ Ext.define('App.view.Login', {
 									allowBlank: false,
 									fieldLabel: 'Пользователь',
 									name: 'user',
+									value: Ext.util.Cookies.get('DIS_LOGIN_USER'),
 									emptyText: 'пользователь',
 									listeners: {
 									  afterrender: function(field) {
-										Ext.getCmp('UserField').focus();
+										if (Ext.getCmp('UserField').getValue() === ''){
+											Ext.getCmp('UserField').focus();
+										}
 									  }
 									}
 								},{
+									id: 'PassField',
 									xtype: 'textfield',
 									allowBlank: false,
 									fieldLabel: 'Пароль',
@@ -73,6 +77,11 @@ Ext.define('App.view.Login', {
 										if (e.getKey() == e.ENTER) {
 											var form = this.up('window').down('form').getForm();
 											me.sendForm(form);
+										}
+									  },
+									  afterrender: function(field) {
+										if (Ext.getCmp('UserField').getValue() !== ''){
+											Ext.getCmp('PassField').focus();
 										}
 									  }
 									}
