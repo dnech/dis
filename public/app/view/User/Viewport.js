@@ -1,4 +1,4 @@
-Ext.define('App.view.Director.Viewport', {
+Ext.define('App.view.User.Viewport', {
     extend: 'Ext.Viewport',    
     layout: 'fit',
 	border: false,
@@ -6,8 +6,8 @@ Ext.define('App.view.Director.Viewport', {
     requires: [
         'Ext.data.*',
 		'Ext.chart.*',
-		'App.view.Director.Top',
-		'App.view.Director.Center',
+		'App.view.User.Top',
+		'App.view.User.Center',
     ],
 	
     initComponent: function() {
@@ -34,8 +34,8 @@ Ext.define('App.view.Director.Viewport', {
                     ],
                     
                     items: [
-						Ext.create('App.view.Director.Top'),
-						Ext.create('App.view.Director.Center'),
+						Ext.create('App.view.User.Top'),
+						Ext.create('App.view.User.Center'),
                     ]
                 }
             ]

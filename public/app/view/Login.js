@@ -90,7 +90,8 @@ Ext.define('App.view.Login', {
 									frame: true,
 									bodyPadding: '5 5 5',
 									height: 58,
-									html: '<div align="right"><img height="48px" width="96px" src="images/logoSmall.jpg"><img height="48px" width="48px" src="images/html5.png"></img><img height="48px" width="48px" src="images/io.png"></img><img height="48px" width="100px" src="images/extjs.png"></img></div>'
+									html: '<div align="right"><img height="48px" width="96px" src="images/logoSmall.jpg"><img height="48px" width="100px" src="images/extjs.png"></img></div>'
+									//html: '<div align="right"><img height="48px" width="96px" src="images/logoSmall.jpg"><img height="48px" width="48px" src="images/html5.png"></img><img height="48px" width="48px" src="images/io.png"></img><img height="48px" width="100px" src="images/extjs.png"></img></div>'
 								},
 							],
 							//listeners: {

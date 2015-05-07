@@ -1,4 +1,4 @@
-Ext.define('App.view.Director.Center', {
+Ext.define('App.view.User.Center', {
     extend: 'Ext.Panel', 
 	
 	requires: [
@@ -46,24 +46,22 @@ Ext.define('App.view.Director.Center', {
 				},{
 					textAlign: 'left',
 					iconAlign: 'left',
-					border: false,
-					title: 'Затраты',
-					icon: 'images/ico/16/coins_delete.png',
+					title: 'Заказы',
+					icon: 'images/ico/16/coins_add.png',
 					layout: 'fit',
-					scrollable: true,
 					items: {
-						id: 'contentOut',
+						id: 'contentIn',
 						layout: 'fit',
 						border: false,
 					}
 				},{
 					textAlign: 'left',
 					iconAlign: 'left',
-					title: 'Заказы',
-					icon: 'images/ico/16/coins_add.png',
+					title: 'Справочники',
+					icon: 'images/ico/table16.png',
 					layout: 'fit',
 					items: {
-						id: 'contentIn',
+						id: 'contentSpravochniki',
 						layout: 'fit',
 						border: false,
 					}
@@ -83,10 +81,10 @@ Ext.define('App.view.Director.Center', {
 		listeners: {	
 			render: function( obj, eOpts ){
 				//Ext.getCmp('contentDashboard').removeAll(true);
-				App.Content.LoadDb('contentDashboard',	'kar.Director.Dashboard');
-				App.Content.LoadDb('contentOut',		'kar.Director.Costs');
-				App.Content.LoadDb('contentIn', 		'kar.Zakaz.List_SQL');
-				App.Content.LoadDb('contentOtchet',		'kar.Director.Otchet');
+				App.Content.LoadDb('contentDashboard',	  'kar.User.Dashboard');
+				App.Content.LoadDb('contentIn', 		  'kar.Zakaz.List_SQL');
+				App.Content.LoadDb('contentSpravochniki', 'kar.User.Spravochniki');
+				App.Content.LoadDb('contentOtchet',		  'kar.User.Otchet');
 			}
 		},
 	})],

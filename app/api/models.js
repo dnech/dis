@@ -186,7 +186,7 @@ module.exports = {
 		// Получаем настройки таблицы
 		try {
 			var fn = new Buffer(table.config, 'base64').toString('utf8'),
-				obj = (new Function(fn))(),
+				obj = (new Function('CONFIG', fn))(table.CURRENT),
 				model = obj.model;
 			var Model = db.define('Model', model.columns, model.settings);
 			Model.CONFIG = obj;

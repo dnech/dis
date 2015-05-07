@@ -13,7 +13,7 @@ function clearOldSession(delta, ok, err) {
 	console.log('!!!!!!! DESTROY OLD Session', oldTime);
 	Models.Sessions.destroy({ where: {updatedAt: {$lt: oldTime,}}})
 	*/
-	Models.Sessions.destroy({ where: '"updatedAt" < NOW() - INTERVAL \'1 hour\''}, { raw: true })	
+	Models.Sessions.destroy({ where: '"updatedAt" < NOW() - INTERVAL \'12 hour\''}, { raw: true })	
 		.then(function() {ok();})
 		.error(function(error){err('session',error)});
 }
@@ -50,7 +50,7 @@ function loginByPass(login, pass, ok, err) {
 				Models.Sessions.build(session).save()
 					.then(function() {
 						getUserBySsid(session.guid, function(session, user, role){
-							ok({name:user.name, login:user.login, ssid: session.guid, role: role.name, config: user.config, extend: role.extend});
+							ok({guid:user.guid, name:user.name, login:user.login, ssid: session.guid, role: role.name, config: user.config, extend: role.extend});
 						}, err);
 					}).error(function(error){err('session', error)});
 		} else {err('session', 'Bad login or password');}}).error(function(error){err('session', error)});
@@ -61,7 +61,7 @@ function loginByPass(login, pass, ok, err) {
 function loginBySsid(ssid, ok, err) {
 	clearOldSession(oldSessionsPeriod, function(){
 		getUserBySsid(ssid, function(session, user, role){
-			ok({name:user.name, login:user.login, ssid: session.guid, role: role.name, config: user.config, extend: role.extend});
+			ok({guid:user.guid, name:user.name, login:user.login, ssid: session.guid, role: role.name, config: user.config, extend: role.extend});
 		}, err);
 	}, err);
 }
